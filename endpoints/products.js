@@ -1,11 +1,11 @@
-const db = require("../db/db");
+const db = require("../config/db");
 
 module.exports = function(app){
 
     // Get the products from data base and send it back to client
     app.get("/products", async(req,res)=>{
         try{
-            const result = await db.pool.query("Select * from products");
+            const result = await db.pool.query("Select * from product");
             res.send(result);
         }  
         catch(error){

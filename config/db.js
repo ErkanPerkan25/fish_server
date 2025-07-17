@@ -11,4 +11,4 @@ const pool = mariadb.createPool({
 
 module.exports = Object.freeze({
     pool: pool
-})
+});
