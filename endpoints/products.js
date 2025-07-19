@@ -14,9 +14,10 @@ module.exports = function(app){
     });
 
     // Get a specific product and it's details for inspection of one item
-    app.get("/product", async(req,res)=>{
+    app.get(`/products/:productName`, async(req,res)=>{
         try{
-
+            const result = await db.pool.query(`select ${req.params.productName} from product`);
+            console.log(result);
         }
         catch(error){
             throw error;
