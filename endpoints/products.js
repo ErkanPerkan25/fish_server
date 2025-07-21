@@ -17,7 +17,6 @@ module.exports = function(app){
     app.get(`/products/:name`, async(req,res)=>{
         try{
             const result = await db.pool.query(`SELECT * FROM product WHERE Name='${req.params.name}'`);
-            console.log(result);
             res.send(result);
         }
         catch(error){
