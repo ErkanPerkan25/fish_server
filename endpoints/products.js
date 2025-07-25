@@ -2,6 +2,12 @@ const db = require("../config/db");
 
 module.exports = function(app){
 
+    // Help function to convert in to correct array for SQL queries
+    function convToQueryArr(arr){
+        const newArr = arr.map(val => `'${val}'`).join(",");
+        return newArr;
+    }
+
     // Get the products from data base and send it back to client
     app.get("/products", async(req,res)=>{
         try{
@@ -14,12 +20,10 @@ module.exports = function(app){
                 const result = await db.pool.query("SELECT * FROM product");
                 res.send(result);
             }
-
             else{
-                const type = req.query.type;
-                console.log(type);
-                //const brand = req.query.brand;
-                const data = await db.pool.query(`SELECT * from product WHERE Basic_unit IN ('${type}')`);
+                const type = convToQueryArr(req.query.type.split(","));
+                //const brand = convToQueryArr(req.query.brand.split(","));
+                const data = await db.pool.query(`SELECT * from product WHERE Basic_unit IN (${type})`);
                 res.send(data);
             }
         }  
