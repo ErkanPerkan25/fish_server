@@ -22,7 +22,9 @@ module.exports = function(app){
             }
             else{
                 const type = convToQueryArr(req.query.type.split(","));
-                //const brand = convToQueryArr(req.query.brand.split(","));
+                const priceRange = req.query.price;
+                //const inStock = req.query.inStock;
+
                 const data = await db.pool.query(`SELECT * from product WHERE Basic_unit IN (${type})`);
                 res.send(data);
             }
