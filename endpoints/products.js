@@ -13,20 +13,39 @@ module.exports = function(app){
         try{
             // Checks if the paramers are empty or not
             const emptyItems = Object.values(req.query).every(
-                value => value === '' || value === null || value === undefined
+                value => value === '' || value === null || value === undefined || value === 'false' 
             );
 
-            if(emptyItems){
-                const result = await db.pool.query("SELECT * FROM product");
-                res.send(result);
+            if(!emptyItems){
+                const type = convToQueryArr(req.query.type.split(","));
+                const brand = convToQueryArr(req.query.brand.split(","));
+                const stock = req.query.inStock;
+
+                let query = ``;
+
+                if(stock === 'true' || type.length > 1){
+                   // query = `SELECT * FROM stock`;
+                   // const stockData = db.pool.query(query);
+                   // res.send(stockData);
+
+                    query = `SELECT * from product WHERE Basic_unit IN (${type})`;
+                    const data = await db.pool.query(query);
+                    if(data.length === 0){
+                        const result = await db.pool.query("SELECT * FROM product");
+                        res.json(result);
+                    }
+                    else{
+                        res.json(data);
+                    }
+                }
+                else{
+                    const result = await db.pool.query("SELECT * FROM product");
+                    res.send(result);
+                }
             }
             else{
-                const type = convToQueryArr(req.query.type.split(","));
-                const priceRange = req.query.price;
-                //const inStock = req.query.inStock;
-
-                const data = await db.pool.query(`SELECT * from product WHERE Basic_unit IN (${type})`);
-                res.send(data);
+                const result = await db.pool.query("SELECT * FROM product");
+                res.send(result);
             }
         }  
         catch(error){
