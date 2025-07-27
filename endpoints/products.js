@@ -18,17 +18,19 @@ module.exports = function(app){
 
             if(!emptyItems){
                 const type = convToQueryArr(req.query.type.split(","));
-                const brand = convToQueryArr(req.query.brand.split(","));
                 const stock = req.query.inStock;
 
                 let query = ``;
 
                 if(stock === 'true' || type.length > 1){
-                   // query = `SELECT * FROM stock`;
-                   // const stockData = db.pool.query(query);
-                   // res.send(stockData);
+                    query = `SELECT * FROM stock`;
+                    const stockData = await db.pool.query(query);
+                    let id = [];
+                    for(let i =0; i < stockData.length; i++){
+                        id.push(stockData[i].Product_ID) ;
+                    }
 
-                    query = `SELECT * from product WHERE Basic_unit IN (${type})`;
+                    query = `SELECT * from product WHERE Basic_unit IN (${type}) OR ID IN(${id})`;
                     const data = await db.pool.query(query);
                     if(data.length === 0){
                         const result = await db.pool.query("SELECT * FROM product");
@@ -53,14 +55,24 @@ module.exports = function(app){
         }
     });
 
-    // Get a specific product and it's details for inspection of one item
-    app.get(`/products/:name`, async(req,res)=>{
+    app.get(`/products/:category`, async(req,res)=>{
         try{
-            const result = await db.pool.query(`SELECT * FROM product WHERE Name='${req.params.name}'`);
-            res.send(result);
+            const result = await db.pool.query(`SELECT * FROM product WHERE Basic_unit='${req.params.category}'`);
+            res.json(result)
         }
         catch(error){
             throw error;
+        }
+    });
+
+    // Get a specific product and it's details for inspection of one item
+    app.get(`/products/:category/:product`, async(req, res)=>{
+        try{
+            const result = await db.pool.query(`SELECT * FROM product WHERE Name='${req.params.product}'`);
+            res.json(result);
+        }
+        catch(error){
+            throw(error);
         }
     });
 }
